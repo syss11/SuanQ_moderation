@@ -1,0 +1,154 @@
+{
+  "deployer": "部署者qq",
+  "enable_commands": "是否启用指令",
+  "debug":{
+    "enable_tools": "是否启用调试工具",
+    "test_groupid": "测试群id"
+  },
+  
+  // Napcat 配置
+  "napcat": {
+    "protocol": "ws或wss协议",
+    "host": "远程napcat服务主机地址",
+    "port": "远程napcat服务端口",
+    "accessToken": "napcat服务访问令牌",
+    "throwPromise": "是否抛出Promise",
+    "reconnection": {
+      "enable": "是否启用重连",
+      "attempts": "重连尝试次数",
+      "delay": "重连延迟时间（毫秒）"
+    },
+    "debug": "是否启用调试模式"
+  },
+
+  // 用户配置
+  "user": {
+    "credit": {
+      "default": "默认积分",
+      "max": "最大积分",
+      "kick_threshold": "踢出阈值",
+      "like_award": "点赞奖励积分",
+      "dislike_penalty": "点踩扣除积分",
+      "max_daily_interactions": "每日最大交互次数（点赞+点踩）",
+      "tiers": [
+        {
+          "min_credit": "区间最小积分",
+          "max_credit": "区间最大积分",
+          "dc_multiplier": "区间惩罚倍率",
+          "mute_multiplier": "区间惩罚倍率",
+          "checkin_award": "签到奖励积分"
+        },
+      ]
+    }
+  },
+  "robot":{
+    "include_official_robot": "识别官方机器人",
+    "custom_robots":[ "自定义机器人qq号" ]
+  },
+
+  // 规则配置
+  "rules": {
+    "whitelistBlacklist": {
+      "enabled": "是否启用白名单/黑名单",
+      "mode": "whitelist或blacklist",
+      "groups": [ "白名单/黑名单群qq" ],
+      "users": [ "白名单/黑名单用户qq" ]
+    },
+    "general": {
+      "flood": [
+        {
+          "windowSize": "滑动窗口大小（秒）",
+          "maxMessages": "窗口最大消息数",
+          "maxLength": "允许最大消息长度",
+          "penalty": {
+            "penalty_type": "mute或credit_deduction",
+            "severity": "惩罚等级计数",
+            "credit_deduction": "积分扣除值",
+            "penalty_time": "惩罚时间（秒）"
+          }
+        },
+        
+      ],
+      "too_long_amount_to": "超长消息等效消息数",
+      "identical_amount_to": "重复消息等效消息数",
+      "bot_call_amount_to": "机器人调用等效消息数"
+    },
+    "moderation": {
+      "enabled": "是否启用内容审核",
+      "pool_size": "积攒消息队列大小",
+      "max_await_time": "积攒消息超时时间（秒）",
+      "adj": "给AI审核的形容词，如tolerant",
+      "penalties": [
+        {
+          "severity": "惩罚等级计数",
+          "penalty": {
+            "penalty_type": "mute或credit_deduction或other",
+            "severity": "惩罚等级计数",
+            "credit_deduction": "积分扣除值",
+            "penalty_time": "惩罚时间（秒）"
+          }
+        },
+      
+      ]
+    },
+    "imageBlacklist": {
+      "enabled": "是否启用图片黑名单",
+      "hammingDistanceThreshold": "图片相似度阈值（3到5）",
+      "penalty": {
+        "penalty_type": "credit_deduction",
+        "severity": "惩罚等级计数",
+        "credit_deduction": "积分扣除值"
+      }
+    },
+    "humanVerification": {
+      "enabled": "是否启用入群人机验证",
+      "maxnum": "题目数值上限"
+    }
+  }
+  ,
+
+  // AI 角色配置
+  "ai": {
+    "enable": "是否启用AI功能",
+    "providers": [
+      
+      {
+        "name": "AI模型名称，自定义",
+        "apiKey": "AI模型API密钥",
+        "baseURL": "AI模型API基础URL",
+        "model": "调用名称，如glm-4-flash",
+        "enable": "是否启用该AI模型"
+      }
+    ],
+    "chat_use_provider": ["AI模型名称，自定义"],
+    "moderation_use_provider": ["AI模型名称，自定义"],
+    "profiles": {
+      "suan": {
+        "name": "人格名称",
+        "prompt": {
+          "personality": "人格描述内容",
+          "reply_style": "回复风格描述",
+          "on_remind_recall_forward": "提醒用户超长消息提示词",
+          "on_remind_flood": "提醒用户刷屏提示词",
+          "on_remind_violation": "提醒用户违规提示词，包含‘{violation_type}’,原因：{reason}"
+        } 
+      }
+      
+    },
+    "activeProfile": "启用人格",
+    "reject_prompt_injection": "防提示词注入的提示词"
+  },
+  
+  "helper":{
+    "admins_group": "管理员群qq",
+    "recall_preventer":{
+      "enabled": "是否启用撤回防止器"
+    }
+  }
+  ,
+  "image_cleanup": {
+    "enabled": "是否启用图片清理",
+    "retention_days": "保留天数"
+  }
+
+}

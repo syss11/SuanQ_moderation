@@ -1,0 +1,14 @@
+node_modules
+public/images
+data/database.sqlite
+data/sensitive.json
+dist
+.vscode
+logs
+src/tests
+plugins/
+
+# Config files (actual configs, not templates)
+.env
+config/config.json
+config/config.dev.json

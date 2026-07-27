@@ -1,0 +1,9 @@
+backup/
+*.backup
+.DS_Store
+
+# Config files (actual configs, not templates)
+suanqm-backend/.env
+suanqm-backend/config/config.json
+suanqm-backend/config/config.dev.json
+suanqm-frontend/.env.production

@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  suanq-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: suanq-backend
+    ports:
+      - "6065:6065"
+    environment:
+      - NODE_ENV=production
+      - DB_STORAGE=/app/data/database.sqlite
+      - DB_SYNCHRONIZE=true
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./config:/app/config:ro
+      - ./data:/app/data
+      - ./.env:/app/.env
+      - ./logs:/app/logs
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    restart: unless-stopped
+    network_mode: host

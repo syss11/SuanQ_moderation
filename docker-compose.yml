@@ -1,0 +1,28 @@
+version: '3.8'
+
+networks:
+  botsnet:
+    external: true
+
+services:
+  suanqm-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: suanqm-backend
+    ports:
+      - "6065:6065"
+    environment:
+      - NODE_ENV=production
+      - DB_STORAGE=/app/data/database.sqlite
+      - DB_SYNCHRONIZE=true
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./suanqm-backend/config:/app/config
+      - ./suanqm-backend/data:/app/data
+      - ./suanqm-backend/logs:/app/logs
+      - ./suanqm-backend/data/images:/app/public/images
+      - ./suanqm-backend/.env:/app/.env
+    restart: unless-stopped
+    networks:
+      - botsnet

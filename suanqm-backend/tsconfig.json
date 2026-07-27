@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {                        
+    "target": "esnext",                               
+    "module": "esnext",                         
+    "outDir": "./dist",                             
+    "strict": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,     
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false,
+    "allowSyntheticDefaultImports": true
+  },
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
+  },
+  "include": [
+    "src/**/*",
+    "tests/**/*"
+  ],
+  "exclude":[
+    "./node_modules","./dist"
+  ]
+}
