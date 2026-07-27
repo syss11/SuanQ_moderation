@@ -1,10 +1,8 @@
 # SuanQ 审核机器人 - 配置教程
 
-欢迎使用 SuanQ 审核机器人！这份教程将帮助你完成所有必要的配置，让机器人顺利运行起来。
+欢迎使用 SuanQ 审核机器人！这份教程将帮助你完成所有必要的配置。
 
----
-
-## 📁 配置文件说明
+## 配置文件说明
 
 项目包含以下配置文件模板（`.example` 后缀），你需要复制它们并去掉 `.example` 后缀来创建实际配置文件：
 
@@ -17,9 +15,7 @@
 
 **重要提示**：`.example` 文件是模板，包含脱敏的默认值，可以安全提交到仓库。实际配置文件（去掉 `.example` 后缀）会被 git 忽略，不会提交到仓库。
 
----
-
-## 🚀 快速开始（5分钟配置）
+## 快速开始（5分钟配置）
 
 ### 第一步：复制配置模板
 
@@ -28,35 +24,19 @@
 **Windows（PowerShell）：**
 
 ```powershell
-# 进入 backend 目录
 cd suanqm-backend
-
-# 复制 .env 模板
 Copy-Item .env.example .env
-
-# 复制 config 模板
 cd config
 Copy-Item config.example.json config.json
-
-# 如果你需要开发环境配置，也可以复制
-# Copy-Item config.dev.example.json config.dev.json
 ```
 
 **Linux/macOS（终端）：**
 
 ```bash
-# 进入 backend 目录
 cd suanqm-backend
-
-# 复制 .env 模板
 cp .env.example .env
-
-# 复制 config 模板
 cd config
 cp config.example.json config.json
-
-# 如果你需要开发环境配置，也可以复制
-# cp config.dev.example.json config.dev.json
 ```
 
 ### 第二步：配置 .env 文件
@@ -64,7 +44,7 @@ cp config.example.json config.json
 打开 `suanqm-backend/.env` 文件，按以下说明填写：
 
 ```env
-# ========== 数据库配置 ==========
+# 数据库配置
 # 选择数据库类型：sqljs（简单）或 mysql（性能好）
 DB_TYPE=sqljs
 
@@ -78,12 +58,7 @@ DB_USERNAME=your_db_username
 DB_PASSWORD=your_db_password
 DB_DATABASE=your_db_name
 
-# ========== 登录密码 ==========
-# 设置管理员登录后台的密码
-AUTH_PASSWORD=你的登录密码
-
-# ========== 应用配置 ==========
-# 服务端口（默认 6065）
+# 应用配置
 APP_PORT=6065
 ```
 
@@ -91,12 +66,20 @@ APP_PORT=6065
 
 | 选项 | 适用场景 | 优点 | 缺点 |
 |------|----------|------|------|
-| **sqljs** | 单机部署、新手 | 无需安装数据库，开箱即用 | 性能一般，非常容易意外写坏 |
-| **mysql** | 生产环境、高负载 | 性能好，支持并发 | 需要额外安装 MySQL |
+| sqljs | 单机部署、新手 | 无需安装数据库，开箱即用 | 性能一般，非常容易意外写坏 |
+| mysql | 生产环境、高负载 | 性能好，支持并发 | 需要额外安装 MySQL |
 
 **新手推荐使用 `sqljs`，直接跳过 MySQL 安装步骤！**
 
----
+#### 密码机制
+
+项目采用自动密码生成机制，确保安全性：
+
+**AUTH_PASSWORD（管理后台密码）**
+- 用途：用于登录 WebUI 管理后台
+- 生成时机：首次启动时自动生成
+- 存储位置：`suanqm-backend/.env` 文件
+- 查看方式：启动时在控制台日志中显示
 
 ### 第三步：配置 config.json 文件
 
@@ -240,9 +223,43 @@ APP_PORT=6065
 
 **如果不使用 AI 功能**：将 `"enable"` 设置为 `false`（默认关闭）
 
----
+## WebUI 前端配置
 
-## 📝 完整配置项速查
+如果需要使用 WebUI 管理界面，需要配置 `suanqm-frontend/.env.production` 文件。
+
+### 复制模板
+
+```powershell
+# Windows
+cd suanqm-frontend
+Copy-Item .env.production.example .env.production
+
+# Linux/macOS
+cd suanqm-frontend
+cp .env.production.example .env.production
+```
+
+### 配置说明
+
+打开 `suanqm-frontend/.env.production` 文件：
+
+```env
+VITE_API_BASE_URL=http://your-production-server:6065
+VITE_WS_BASE_URL=ws://your-production-server:6065
+```
+
+| 场景 | 配置值 |
+|------|--------|
+| **本地部署** | `http://localhost:6065` 和 `ws://localhost:6065` |
+| **服务器部署** | `http://服务器IP:6065` 和 `ws://服务器IP:6065` |
+
+**说明：**
+- `VITE_API_BASE_URL`: 前端调用后端 API 的地址
+- `VITE_WS_BASE_URL`: WebSocket 连接地址
+
+配置完成后，按照 README.md 中的 WebUI 使用步骤进行构建和部署。
+
+## 完整配置项速查
 
 ### 1. debug 调试配置
 
@@ -325,99 +342,11 @@ APP_PORT=6065
 | `enabled` | boolean | 是否自动清理图片 |
 | `retention_days` | number | 图片保留天数 |
 
----
-
-## 🎯 新手推荐配置
-
-如果你是第一次配置，建议使用以下默认设置：
-
-```json
-{
-  "deployer": 你的QQ号,
-  "enable_commands": true,
-  "debug": {
-    "enable_tools": false,
-    "test_groupid": null
-  },
-  "napcat": {
-    "protocol": "ws",
-    "host": "localhost",
-    "port": 3011,
-    "accessToken": "你的napcat令牌",
-    "throwPromise": true,
-    "reconnection": {
-      "enable": true,
-      "attempts": 3,
-      "delay": 3000
-    },
-    "debug": false
-  },
-  "rules": {
-    "whitelistBlacklist": {
-      "enabled": true,
-      "mode": "whitelist",
-      "groups": [你要管理的群号]
-    },
-    "moderation": {
-      "enabled": false
-    },
-    "humanVerification": {
-      "enabled": false
-    }
-  },
-  "ai": {
-    "enable": false
-  }
-}
-```
-
----
-
-## ❓ 常见问题
-
-**Q: 为什么机器人不响应？**
-
-A: 请检查：
-1. Napcat 是否正常运行
-2. `accessToken` 是否正确
-3. `host` 和 `port` 是否正确
-4. 群号是否在白名单中
-5. 是否已经复制 `.example` 文件并去掉了后缀
-
-**Q: 如何获取群号？**
-
-A: 在 QQ 群设置中，找到"群号"，复制数字即可。
-
-**Q: 数据库连接失败怎么办？**
-
-A: 如果使用 MySQL，请确保：
-1. MySQL 服务已启动
-2. 用户名和密码正确
-3. 数据库已创建
-4. 用户有访问权限
-
-**Q: AI 功能如何开启？**
-
-A: 先注册智谱 AI 账号获取 API Key，然后：
-1. 将 `"ai.enable"` 设置为 `true`
-2. 填写 `apiKey`
-3. 将 `providers[0].enable` 设置为 `true`
-
-**Q: 配置文件修改后需要重启吗？**
-
-A: 需要。修改配置文件后，需要重启后端服务才能生效。
-
----
-
-## 📄 配置文件模板
+## 配置文件模板
 
 完整的配置模板参考以下文件：
 - `suanqm-backend/config/config_guide.json` - 所有配置项的中文说明
 - `suanqm-backend/config/config.example.json` - 配置文件模板
 - `suanqm-backend/.env.example` - 环境变量模板
 
----
-
-祝你使用愉快！🎉
-
-如有问题，请查看项目 [README.md](README.md) 或提交 Issue。
+祝你使用愉快！如有问题，请查看项目 README.md 或提交 Issue。

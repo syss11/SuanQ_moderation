@@ -18,6 +18,16 @@ import pluginManager from './plugins.js';
 import * as fs from 'fs';
 import * as path from 'path';
 
+// 检查 .env 文件是否存在
+const envPath = path.join(process.cwd(), '.env');
+if (!fs.existsSync(envPath)) {
+  logger.error('========================================');
+  logger.error('配置文件 .env 不存在');
+  logger.error('请根据 CONFIG.md 文档进行配置');
+  logger.error('========================================');
+  process.exit(1);
+}
+
 dotenv.config();
 
 const jwtSecret = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
@@ -63,7 +73,26 @@ ensureAuthPassword();
 
 const isTestMode = process.env.NODE_ENV === 'test';
 
-await initializeDatabase();
+try {
+  await initializeDatabase();
+} catch (error: any) {
+  logger.error('========================================');
+  logger.error('数据库初始化失败');
+  logger.error('========================================');
+  logger.error('错误信息:', error.message || error);
+  logger.error('');
+  logger.error('可能的原因:');
+  logger.error('  1. .env 文件中的数据库配置不正确');
+  logger.error('  2. MySQL 服务未启动（如果使用 MySQL）');
+  logger.error('  3. 数据库用户名或密码错误');
+  logger.error('');
+  logger.error('解决方法:');
+  logger.error('  - 检查 .env 文件中的 DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD');
+  logger.error('  - 如果使用 MySQL，确保 MySQL 服务正在运行');
+  logger.error('  - 如果使用 sqljs，确保 data 目录有写入权限');
+  logger.error('========================================');
+  process.exit(1);
+}
 
 
 const adapter=new SqAdapter(napcat, isTestMode)

@@ -27,7 +27,10 @@ function loadConfig(): AppConfig {
     
     // 检查配置文件是否存在
     if (!fs.existsSync(currentConfigPath)) {
-      logger.error(`配置文件不存在: ${currentConfigPath}`);
+      logger.error('========================================');
+      logger.error('配置文件不存在:', currentConfigPath);
+      logger.error('请根据 CONFIG.md 文档进行配置');
+      logger.error('========================================');
       process.exit(1);
     }
 
