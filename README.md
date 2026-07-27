@@ -28,7 +28,7 @@ SuanQ_Moderation
 3. 估算内存消耗不大，整体为异步并行架构
 
 ## 部署步骤
-
+提示：本项目涉及多个服务以及较多配置术语，建议小白通过AI助手帮助配置，一起学习。
 ## 普通部署
 1. 安装Node.js [https://nodejs.org/zh-cn/download/](https://nodejs.org/zh-cn/download/)-本项目使用nvm+pnpm（npm也可），建议最新版本
 2. 克隆项目到本地 `git clone (项目地址.git)`
@@ -79,6 +79,13 @@ SuanQ_Moderation
 4. 运行 `npm run build` 编译项目，找到dist文件夹
 5. 将dist复制到`suanqm-backend\public\`下
 6. 重启项目，默认端口6065（本机http://localhost:6065, 若docker部署，需映射端口...）
+
+## 项目架构
+1. QQ:接入的消息平台，注意账号风控，相关问题去napcat咨询更佳。
+2. Napcat:与QQ交互的框架，是单独的服务，需要单独部署后通过WS连接。
+3. 本项目:Napcat的客户端，WebUI的服务端。
+4. 数据库:sqljs（简单）或 mysql（性能好），mysql需要进一步配置。
+5. WebUI:前端，BaseUrl需要根据服务提供者配置。
 
 ## 技术与声明
 1. 项目基础：Napcat Node.js
