@@ -29,7 +29,7 @@ SuanQ_Moderation
 
 ## 部署步骤
 
-# 普通部署
+## 普通部署
 1. 安装Node.js [https://nodejs.org/zh-cn/download/](https://nodejs.org/zh-cn/download/)-本项目使用nvm+pnpm（npm也可），建议最新版本
 2. 克隆项目到本地 `git clone (项目地址.git)`
 3. 进入项目目录的suanqm-backend部分，运行 `pnpm install` 安装依赖
@@ -38,15 +38,19 @@ SuanQ_Moderation
 6. 等待启动，若出现问题，参考日志输出
 7. 发送test可测试（保证群聊已配置白名单，或不在黑名单里）
 
-# Docker部署
+## Docker部署
 1. 确保安装了docker（windows本步骤较麻烦）
 2. 按napcat连接指导配置napcat连接配置（config/config.json）
 3. 直接在项目根目录运行 `docker-compose up -d --build` 启动项目
 4. 等待启动，若出现问题，参考日志输出（`docker compose logs`）
 5. 发送test可测试（保证群聊已配置白名单，或不在黑名单里）
 
+## MySQL部署
+1. 确保安装了mysql
+2. 创建mysql数据库，配置与env配置相符
+3. Docker默认Host网络，本机3306即可
 
-# NcpCat连接指导
+## NcpCat连接指导
 1. 安装并启动napcat（具体看napcat文档，可用docker）
 2. 配置napcat连接配置，通常在Napcat WebUI网络配置
 3. 配置”WS服务端“，端口默认3000，记录access token。
@@ -54,7 +58,7 @@ SuanQ_Moderation
 5. host项：若非docker，则为127.0.0.1，若docker，则可查询docker网络等知识推导服务访问地址
 6. 启动项目，若连接失败，则程序直接终止。
 
-# 密码机制
+## 密码机制
 项目采用自动密码生成机制，确保安全性：
 
 ### AUTH_PASSWORD（管理后台密码）
@@ -63,12 +67,12 @@ SuanQ_Moderation
 - **存储位置**：`suanqm-backend/.env` 文件
 - **查看方式**：启动时在控制台日志中显示
 
-# CONFIG.md
+## CONFIG.md
 - 重要，请根据CONFIG.md配置文件说明，配置suanqm-backend/config/config.json文件与suanqm-backend/.env文件。
 - 配置完成需要重启项目生效。
 - 不进行配置无法运行项目。
 
-# WebUI使用
+## WebUI使用
 1. 检查`suanqm-frontend\.env.production`，若非本机部署，改为服务的IP+端口。
 2. 若Docker部署，跳过3，4，5步骤。
 3. 进入suanqm-frontend目录，运行 `npm install` 安装依赖
@@ -76,7 +80,7 @@ SuanQ_Moderation
 5. 将dist复制到`suanqm-backend\public\`下
 6. 重启项目，默认端口6065（本机http://localhost:6065, 若docker部署，需映射端口...）
 
-# 技术与声明
+## 技术与声明
 1. 项目基础：Napcat Node.js
 2. 项目语言： TypeScript
 3. 项目技术：TypeORM，Express，Vue等
