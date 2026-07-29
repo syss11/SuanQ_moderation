@@ -77,7 +77,7 @@ SuanQ_Moderation
 2. 若Docker部署，跳过3，4，5步骤。
 3. 进入suanqm-frontend目录，运行 `npm install` 安装依赖
 4. 运行 `npm run build` 编译项目，找到dist文件夹
-5. 将dist复制到`suanqm-backend\public\`下
+5. 将dist复制到`suanqm-backend\public\`下(注意需要/dist这一层，如直接复制dist下内容则不行)
 6. 重启项目，默认端口6065（本机http://localhost:6065, 若docker部署，需映射端口...）
 
 ## 项目架构

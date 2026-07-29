@@ -1,5 +1,5 @@
 {
-  "deployer": "你的QQ号",
+  "deployer": 1234567890,
   "enable_commands": true,
   "debug":{
     "enable_tools": true,
@@ -83,15 +83,15 @@
   },
   "robot":{
     "include_official_robot": true,
-    "custom_robots": [ "自定义机器人QQ号" ]
+    "custom_robots": [ 123456789 ]
   },
 
   "rules": {
     "whitelistBlacklist": {
       "enabled": true,
       "mode": "whitelist",
-      "groups": [ "白名单群ID" ],
-      "users": [ "白名单用户ID" ]
+      "groups": [ 123456789 ],
+      "users": [ 123456789 ]
     },
     "general": {
       "flood": [

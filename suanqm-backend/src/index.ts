@@ -40,8 +40,13 @@ function generateRandomPassword(length: number = 32): string {
 
 function ensureAuthPassword() {
   const envPath = path.join(process.cwd(), '.env');
+  const DEFAULT_PLACEHOLDER = 'your_auth_password';
+  const currentPassword = process.env.AUTH_PASSWORD;
   
-  if (!process.env.AUTH_PASSWORD) {
+  const isPasswordEmpty = !currentPassword;
+  const isPasswordPlaceholder = currentPassword === DEFAULT_PLACEHOLDER;
+  
+  if (isPasswordEmpty || isPasswordPlaceholder) {
     const randomPassword = generateRandomPassword(24);
     
     let envContent = '';
@@ -58,8 +63,10 @@ function ensureAuthPassword() {
     fs.writeFileSync(envPath, envContent, 'utf-8');
     process.env.AUTH_PASSWORD = randomPassword;
     
+    const reason = isPasswordEmpty ? '未设置密码' : '检测到默认占位符密码';
+    
     logger.log('========================================');
-    logger.log('首次启动：已生成随机认证密码');
+    logger.log(`⚠️  ${reason}，已自动生成安全密码`);
     logger.log('========================================');
     logger.log(`认证密码: ${randomPassword}`);
     logger.log('========================================');
