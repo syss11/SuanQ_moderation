@@ -1,4 +1,5 @@
 import { promises as fs } from 'fs';
+import fsSync from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { logger } from './logger.js';
@@ -89,6 +90,16 @@ class PluginManager {
     this.pluginsDirectory = join(cwd, 'src','plugins');
     this.distPluginsDirectory = join(cwd, 'dist','plugins');
     
+    // 确保 plugins 目录存在
+    if (!fsSync.existsSync(this.pluginsDirectory)) {
+      fsSync.mkdirSync(this.pluginsDirectory, { recursive: true });
+      logger.log(`插件管理器: 创建 plugins 目录 ${this.pluginsDirectory}`);
+    }
+    
+    // 确保 dist/plugins 目录存在
+    if (!fsSync.existsSync(this.distPluginsDirectory)) {
+      fsSync.mkdirSync(this.distPluginsDirectory, { recursive: true });
+    }
   }
 
   initialize(

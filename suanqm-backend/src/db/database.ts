@@ -15,7 +15,9 @@ const entitiesPath = dbType === 'mysql'
   ? './entities/index.js' 
   : './entities/sqljs/index.js';
 
-const {
+export const entityModule = await import(entitiesPath);
+
+export const {
   User,
   GroupMessage,
   GroupChat,
@@ -27,7 +29,7 @@ const {
   UserInteraction,
   CoAdmin,
   CommandLog,
-} = await import(entitiesPath);
+} = entityModule;
 
 const commonConfig = {
   entities: [

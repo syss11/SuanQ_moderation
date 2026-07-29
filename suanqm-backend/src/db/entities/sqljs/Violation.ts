@@ -44,7 +44,7 @@ export class Violation {
   })
   violation_type: ViolationType;
 
-  @Column({ nullable: true })
+  @Column({ type: 'integer', nullable: true })
   severity: number;
 
   @Column({ default: 0 })

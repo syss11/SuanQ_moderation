@@ -28,7 +28,7 @@ export class GroupMessage {
   @Column()
   message_type: string;
 
-  @Column({ type: 'json' })
+  @Column({ type: 'simple-json' })
   sender: {
     user_id: number;
     nickname: string;
@@ -45,7 +45,7 @@ export class GroupMessage {
   @Column()
   sub_type: string;
 
-  @Column({ type: 'json' })
+  @Column({ type: 'simple-json' })
   message: any[];
 
   @Column()

@@ -9,7 +9,7 @@ export class GroupChat {
   @Column({ unique: true })
   group_id: number;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   name?: string;
 
   @Column({ default: 0 })

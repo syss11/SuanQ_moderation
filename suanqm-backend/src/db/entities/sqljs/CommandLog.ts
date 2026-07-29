@@ -10,7 +10,7 @@ export class CommandLog {
   user_id: number;
 
   @Index()
-  @Column({ nullable: true })
+  @Column({ type: 'integer', nullable: true })
   group_id: number | null;
 
   @Index()
@@ -23,10 +23,10 @@ export class CommandLog {
   @Column({ type: 'boolean', default: false })
   is_co_admin: boolean;
 
-  @Column({ nullable: true })
+  @Column({ type: 'integer', nullable: true })
   ruling_cost: number | null;
 
-  @Column({ nullable: true })
+  @Column({ type: 'integer', nullable: true })
   target_user_id: number | null;
 
   @Column({ type: 'varchar', length: 50, nullable: true })

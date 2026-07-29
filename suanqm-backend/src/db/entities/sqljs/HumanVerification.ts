@@ -22,7 +22,7 @@ export class HumanVerification {
   @Column({ default: 0 })
   retry_times: number;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   answer?: string;
 
   @Column({ default: 'pending' })

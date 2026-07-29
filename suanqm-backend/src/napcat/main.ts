@@ -201,15 +201,17 @@ export const main_handlers = [
     groupMetaInfo.ensure_all_groups_users();
 
     if (getConfig().debug.enable_tools) {
-      await napcat.send_group_msg({
-        group_id: getConfig().debug.test_groupid,
-        message: [{
-          type: 'text',
-          data: {
-            text: 'DEBUG:机器人已启动'
-          }
-        }]
-      })
+      if (getConfig().debug.test_groupid) {
+        await napcat.send_group_msg({
+          group_id: getConfig().debug.test_groupid,
+          message: [{
+            type: 'text',
+            data: {
+              text: 'DEBUG:机器人已启动'
+            }
+          }]
+        })
+      }
     }
         
     known_robots = getConfig().robot?.custom_robots || [];
