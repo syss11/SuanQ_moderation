@@ -4,6 +4,11 @@ import { userService } from "../db/services/UserService.js";
 import { messageService } from "../db/services/MessageServices.js";
 import userInteractionService from "../db/services/UserInteractionService.js";
 import { logger } from "../logger.js";
+import { checkWhitelistBlacklist } from "../handler/index.js";
+
+
+
+
 
 type GroupInfo =
 {
@@ -26,6 +31,7 @@ class GroupMetaInfo{
 
     async init_groups(){
         this.group_list = await napcat.get_group_list();
+        this.group_list = this.group_list.filter(g => checkWhitelistBlacklist('group', g.group_id));
     }
 
     async get_my_role(group_id: number){

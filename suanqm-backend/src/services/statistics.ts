@@ -1,5 +1,4 @@
-import { AppDataSource, dbType } from '../db/database.js';
-import { GroupMessage } from '../db/entities/index.js';
+import { AppDataSource, dbType, GroupMessage } from '../db/database.js';
 
 export interface MessageTrendItem {
   date: string;

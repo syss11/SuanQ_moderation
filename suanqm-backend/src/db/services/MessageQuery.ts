@@ -1,13 +1,6 @@
 import { Repository, EntityManager } from 'typeorm';
-import { AppDataSource } from '../database.js';
-import {
-  User,
-  GroupChat,
-  PrivateMessage as PrivateMessageEntity,
-  GroupMessage as GroupMessageEntity,
-  GroupMember,
-  Image
-} from '../entities/index.js';
+import { AppDataSource, User, GroupChat, PrivateMessage, GroupMessage, GroupMember, Image } from '../database.js';
+import type { UserEntity, GroupChatEntity, PrivateMessageEntity, GroupMessageEntity, GroupMemberEntity, ImageEntity } from '../database.js';
 import { handle_messages } from '../../server/utils/format_messages.js';
 import { Simplified_GroupMessage, Simplified_PrivateFriendMessage } from '../../server/utils/suanq_types.js';
 
@@ -23,20 +16,20 @@ interface GetMessagesOptions {
 }
 
 export class MessageQuery {
-  private userRepo: Repository<User>;
-  private groupRepo: Repository<GroupChat>;
-  private groupMemberRepo: Repository<GroupMember>;
+  private userRepo: Repository<UserEntity>;
+  private groupRepo: Repository<GroupChatEntity>;
+  private groupMemberRepo: Repository<GroupMemberEntity>;
   private privateMsgRepo: Repository<PrivateMessageEntity>;
   private groupMsgRepo: Repository<GroupMessageEntity>;
-  private imageRepo: Repository<Image>;
+  private imageRepo: Repository<ImageEntity>;
   private entityManager: EntityManager;
 
   constructor() {
     this.userRepo = AppDataSource.getRepository(User);
     this.groupRepo = AppDataSource.getRepository(GroupChat);
     this.groupMemberRepo = AppDataSource.getRepository(GroupMember);
-    this.privateMsgRepo = AppDataSource.getRepository(PrivateMessageEntity);
-    this.groupMsgRepo = AppDataSource.getRepository(GroupMessageEntity);
+    this.privateMsgRepo = AppDataSource.getRepository(PrivateMessage);
+    this.groupMsgRepo = AppDataSource.getRepository(GroupMessage);
     this.imageRepo = AppDataSource.getRepository(Image);
     this.entityManager = AppDataSource.manager;
   }
@@ -250,7 +243,7 @@ export class MessageQuery {
   /**
    * 获取消息中的图片信息
    */
-  async getMessageImages(messageId: number): Promise<Image[]> {
+  async getMessageImages(messageId: number): Promise<ImageEntity[]> {
     return await this.imageRepo.find({
       where: { message_id: messageId },
       order: { created_at: 'ASC' }

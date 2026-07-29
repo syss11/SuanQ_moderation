@@ -1,11 +1,11 @@
-import { AppDataSource } from '../database.js';
-import { UserInteraction } from '../entities/UserInteraction.js';
+import { AppDataSource, UserInteraction } from '../database.js';
+import type { UserInteractionEntity } from '../database.js';
 import { logger } from '../../logger.js';
 
 class UserInteractionService {
   private interactionRepo = AppDataSource.getRepository(UserInteraction);
 
-  async getOrCreateInteraction(userId: number, groupId: number): Promise<UserInteraction> {
+  async getOrCreateInteraction(userId: number, groupId: number): Promise<UserInteractionEntity> {
     let interaction = await this.interactionRepo.findOne({
       where: { user_id: userId, group_id: groupId }
     });
@@ -24,7 +24,7 @@ class UserInteractionService {
     return interaction;
   }
 
-  async getInteraction(userId: number, groupId: number): Promise<UserInteraction | null> {
+  async getInteraction(userId: number, groupId: number): Promise<UserInteractionEntity | null> {
     return await this.interactionRepo.findOne({
       where: { user_id: userId, group_id: groupId }
     });
@@ -100,17 +100,17 @@ class UserInteractionService {
     logger.log(`为群 ${groupId} 的 ${memberIds.length} 个成员初始化交互记录`);
   }
 
-  async getAllInteractions(): Promise<UserInteraction[]> {
+  async getAllInteractions(): Promise<UserInteractionEntity[]> {
     return await this.interactionRepo.find();
   }
 
-  async getInteractionsByGroup(groupId: number): Promise<UserInteraction[]> {
+  async getInteractionsByGroup(groupId: number): Promise<UserInteractionEntity[]> {
     return await this.interactionRepo.find({
       where: { group_id: groupId }
     });
   }
 
-  async getInteractionsByUser(userId: number): Promise<UserInteraction[]> {
+  async getInteractionsByUser(userId: number): Promise<UserInteractionEntity[]> {
     return await this.interactionRepo.find({
       where: { user_id: userId }
     });
@@ -175,6 +175,32 @@ class UserInteractionService {
 
     logger.log(`重置群 ${groupId} 所有用户的交互次数为 ${count}`);
     return result.affected || 0;
+  }
+
+  async resetAllCheckinsGlobal(count: number = 1): Promise<number> {
+    const result = await this.interactionRepo
+      .createQueryBuilder()
+      .update(UserInteraction)
+      .set({ remaining_checkins: count })
+      .where('remaining_checkins < :count', { count })
+      .execute();
+
+    const affected = result.affected || 0;
+    logger.log(`每日签到次数重置完成: ${affected} 个用户已重置为 ${count} 次`);
+    return affected;
+  }
+
+  async resetAllInteractionsGlobal(count: number = 3): Promise<number> {
+    const result = await this.interactionRepo
+      .createQueryBuilder()
+      .update(UserInteraction)
+      .set({ remaining_interactions: count })
+      .where('remaining_interactions < :count', { count })
+      .execute();
+
+    const affected = result.affected || 0;
+    logger.log(`每日交互次数重置完成: ${affected} 个用户已重置为 ${count} 次`);
+    return affected;
   }
 }
 

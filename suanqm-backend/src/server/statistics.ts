@@ -1,8 +1,7 @@
 import { Router } from 'express';
 import { authMiddleware } from './middleware/auth.js';
 import { statisticsService } from '../services/statistics.js';
-import { AppDataSource } from '../db/database.js';
-import { GroupChat } from '../db/entities/index.js';
+import { messageService } from '../db/services/MessageServices.js';
 import { checkWhitelistBlacklist } from '../handler/index.js';
 
 const router = Router();
@@ -180,10 +179,7 @@ router.get('/api/statistics/hourly-distribution', authMiddleware, async (req, re
  */
 router.get('/api/statistics/groups', authMiddleware, async (req, res) => {
   try {
-    const repo = AppDataSource.getRepository(GroupChat);
-    const groups = await repo.find({
-      select: ['group_id', 'name', 'member_count']
-    });
+    const groups = await messageService.getAllGroups();
     const filteredGroups = groups.filter(group => {
       return checkWhitelistBlacklist('group', Number(group.group_id));
     });

@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from './middleware/auth.js';
 import { violationService } from '../db/services/ViolationService.js';
-import { ViolationType, ViolationStatus } from '../db/entities/Violation.js';
+import { ViolationType, ViolationStatus } from '../db/database.js';
 import { logger } from '../logger.js';
 
 const router = Router();

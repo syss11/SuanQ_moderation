@@ -1,5 +1,5 @@
 import type { NapcatConfig, UserConfig, RulesConfig, AIConfig, RobotConfig, CreditTier, FloodConfig, SeverityConfig, ImageBlacklistConfig, WhitelistBlacklistConfig, AIProvider, CharacterProfile, HelperConfig } from './config.js';
-import type { PenaltyType } from '../db/entities/Violation.js';
+import type { PenaltyType } from '../db/database.js';
 import { logger } from '../logger.js';
 
 interface ValidationResult {

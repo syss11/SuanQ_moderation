@@ -1,6 +1,6 @@
 import { Repository, FindOptionsWhere } from 'typeorm';
-import { AppDataSource } from '../database.js';
-import { Violation, ViolationType, PenaltyType, ViolationStatus } from '../entities/Violation.js';
+import { AppDataSource, Violation, ViolationType, PenaltyType, ViolationStatus } from '../database.js';
+import type { ViolationEntity } from '../database.js';
 import { logger } from '../../logger.js';
 
 export interface CreateViolationOptions {
@@ -15,7 +15,7 @@ export interface CreateViolationOptions {
 }
 
 export class ViolationService {
-  private violationRepo: Repository<Violation>;
+  private violationRepo: Repository<ViolationEntity>;
 
   constructor() {
     this.violationRepo = AppDataSource.getRepository(Violation);
@@ -24,7 +24,7 @@ export class ViolationService {
   /**
    * 创建违规记录
    */
-  async createViolation(options: CreateViolationOptions): Promise<Violation | null> {
+  async createViolation(options: CreateViolationOptions): Promise<ViolationEntity | null> {
     try {
       const violation = this.violationRepo.create({
         user_id: options.user_id,
@@ -48,7 +48,7 @@ export class ViolationService {
   /**
    * 根据ID查询违规记录
    */
-  async getViolationById(id: number): Promise<Violation | null> {
+  async getViolationById(id: number): Promise<ViolationEntity | null> {
     try {
       return await this.violationRepo.findOne({ where: { id } });
     } catch (error) {
@@ -64,11 +64,11 @@ export class ViolationService {
     limit?: number;
     offset?: number;
     status?: ViolationStatus;
-  } = {}): Promise<{ violations: Violation[]; total: number }> {
+  } = {}): Promise<{ violations: ViolationEntity[]; total: number }> {
     try {
       const { limit = 50, offset = 0, status } = options;
 
-      const where: FindOptionsWhere<Violation> = { user_id };
+      const where: FindOptionsWhere<ViolationEntity> = { user_id };
       if (status) {
         where.status = status;
       }
@@ -93,7 +93,7 @@ export class ViolationService {
   async getViolationsByType(violation_type: ViolationType, options: {
     limit?: number;
     offset?: number;
-  } = {}): Promise<{ violations: Violation[]; total: number }> {
+  } = {}): Promise<{ violations: ViolationEntity[]; total: number }> {
     try {
       const { limit = 50, offset = 0 } = options;
 
@@ -131,7 +131,7 @@ export class ViolationService {
   /**
    * 更新违规记录
    */
-  async updateViolation(id: number, updates: Partial<Violation>): Promise<boolean> {
+  async updateViolation(id: number, updates: Partial<ViolationEntity>): Promise<boolean> {
     try {
       const result = await this.violationRepo.update(
         { id },
@@ -166,7 +166,7 @@ export class ViolationService {
     user_id: number,
     startTime: number,
     endTime: number
-  ): Promise<Violation[]> {
+  ): Promise<ViolationEntity[]> {
     try {
       return await this.violationRepo
         .createQueryBuilder('violation')
@@ -234,11 +234,11 @@ export class ViolationService {
     offset?: number;
     status?: ViolationStatus;
     violation_type?: ViolationType;
-  } = {}): Promise<{ violations: Violation[]; total: number }> {
+  } = {}): Promise<{ violations: ViolationEntity[]; total: number }> {
     try {
       const { limit = 50, offset = 0, status, violation_type } = options;
 
-      const where: FindOptionsWhere<Violation> = {};
+      const where: FindOptionsWhere<ViolationEntity> = {};
       if (status) {
         where.status = status;
       }

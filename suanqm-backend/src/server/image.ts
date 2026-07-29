@@ -1,7 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from './middleware/auth.js';
-import { AppDataSource } from '../db/database.js';
-import { Image } from '../db/entities/Image.js';
+import { ImageService } from '../db/services/ImageService.js';
 import { logger } from '../logger.js';
 
 const router = Router();
@@ -37,7 +36,6 @@ router.get('/api/images/banned', authMiddleware, async (req: Request, res: Respo
   try {
     const page = parseInt(req.query.page as string) || 1;
     const pageSize = parseInt(req.query.pageSize as string) || 20;
-    const offset = (page - 1) * pageSize;
 
     if (page < 1) {
       return res.status(400).json({
@@ -53,22 +51,8 @@ router.get('/api/images/banned', authMiddleware, async (req: Request, res: Respo
       });
     }
 
-    const dataSource = AppDataSource;
-    if (!dataSource) {
-      return res.status(500).json({
-        code: 500,
-        message: '数据库连接未初始化'
-      });
-    }
-
-    const imageRepository = dataSource.getRepository(Image);
-
-    const [images, total] = await imageRepository.findAndCount({
-      where: { banned: true },
-      order: { created_at: 'DESC' },
-      take: pageSize,
-      skip: offset
-    });
+    const imageService = new ImageService();
+    const { images, total } = await imageService.paginatedFind(true, page, pageSize);
 
     const totalPages = Math.ceil(total / pageSize);
 
@@ -108,7 +92,6 @@ router.get('/api/images/unbanned', authMiddleware, async (req: Request, res: Res
   try {
     const page = parseInt(req.query.page as string) || 1;
     const pageSize = parseInt(req.query.pageSize as string) || 20;
-    const offset = (page - 1) * pageSize;
 
     if (page < 1) {
       return res.status(400).json({
@@ -124,22 +107,8 @@ router.get('/api/images/unbanned', authMiddleware, async (req: Request, res: Res
       });
     }
 
-    const dataSource = AppDataSource;
-    if (!dataSource) {
-      return res.status(500).json({
-        code: 500,
-        message: '数据库连接未初始化'
-      });
-    }
-
-    const imageRepository = dataSource.getRepository(Image);
-
-    const [images, total] = await imageRepository.findAndCount({
-      where: { banned: false },
-      order: { created_at: 'DESC' },
-      take: pageSize,
-      skip: offset
-    });
+    const imageService = new ImageService();
+    const { images, total } = await imageService.paginatedFind(false, page, pageSize);
 
     const totalPages = Math.ceil(total / pageSize);
 
@@ -186,18 +155,8 @@ router.get('/api/images/:imageId', authMiddleware, async (req: Request, res: Res
       });
     }
 
-    const dataSource = AppDataSource;
-    if (!dataSource) {
-      return res.status(500).json({
-        code: 500,
-        message: '数据库连接未初始化'
-      });
-    }
-
-    const imageRepository = dataSource.getRepository(Image);
-    const image = await imageRepository.findOne({
-      where: { id: imageId }
-    });
+    const imageService = new ImageService();
+    const image = await imageService.findById(imageId);
 
     if (!image) {
       return res.status(404).json({
@@ -241,29 +200,17 @@ router.delete('/api/images/:imageId', authMiddleware, async (req: Request, res: 
       });
     }
 
-    const dataSource = AppDataSource;
-    if (!dataSource) {
-      return res.status(500).json({
-        code: 500,
-        message: '数据库连接未初始化'
-      });
-    }
+    const imageService = new ImageService();
+    const removed = await imageService.removeById(imageId);
 
-    const imageRepository = dataSource.getRepository(Image);
-    const image = await imageRepository.findOne({
-      where: { id: imageId }
-    });
-
-    if (!image) {
+    if (!removed) {
       return res.status(404).json({
         code: 404,
         message: '图片不存在'
       });
     }
 
-    await imageRepository.remove(image);
-
-    logger.log(`图片已删除: ID=${imageId}, filename=${image.filename}`);
+    logger.log(`图片已删除: ID=${imageId}`);
 
     res.status(200).json({
       code: 200,
@@ -291,18 +238,8 @@ router.patch('/api/images/:imageId/unban', authMiddleware, async (req: Request, 
       });
     }
 
-    const dataSource = AppDataSource;
-    if (!dataSource) {
-      return res.status(500).json({
-        code: 500,
-        message: '数据库连接未初始化'
-      });
-    }
-
-    const imageRepository = dataSource.getRepository(Image);
-    const image = await imageRepository.findOne({
-      where: { id: imageId }
-    });
+    const imageService = new ImageService();
+    const image = await imageService.unbanImage(imageId);
 
     if (!image) {
       return res.status(404).json({
@@ -311,18 +248,7 @@ router.patch('/api/images/:imageId/unban', authMiddleware, async (req: Request, 
       });
     }
 
-    if (!image.banned) {
-      return res.status(400).json({
-        code: 400,
-        message: '图片未被禁止'
-      });
-    }
-
-    image.banned = false;
-    image.ban_reason = null;
-    await imageRepository.save(image);
-
-    logger.log(`图片已解禁: ID=${imageId}, filename=${image.filename}`);
+    logger.log(`图片已解禁: ID=${imageId}`);
 
     const responseData: ImageResponse = {
       id: image.id,
@@ -367,18 +293,8 @@ router.patch('/api/images/:imageId/ban', authMiddleware, async (req: Request, re
       });
     }
 
-    const dataSource = AppDataSource;
-    if (!dataSource) {
-      return res.status(500).json({
-        code: 500,
-        message: '数据库连接未初始化'
-      });
-    }
-
-    const imageRepository = dataSource.getRepository(Image);
-    const image = await imageRepository.findOne({
-      where: { id: imageId }
-    });
+    const imageService = new ImageService();
+    const image = await imageService.banImage(imageId, reason);
 
     if (!image) {
       return res.status(404).json({
@@ -386,17 +302,6 @@ router.patch('/api/images/:imageId/ban', authMiddleware, async (req: Request, re
         message: '图片不存在'
       });
     }
-
-    if (image.banned) {
-      return res.status(400).json({
-        code: 400,
-        message: '图片已被禁止'
-      });
-    }
-
-    image.banned = true;
-    image.ban_reason = reason;
-    await imageRepository.save(image);
 
     logger.log(`图片已封禁: ID=${imageId}, filename=${image.filename}, reason=${reason}`);
 

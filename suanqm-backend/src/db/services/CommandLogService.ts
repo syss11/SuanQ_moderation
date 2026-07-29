@@ -1,5 +1,5 @@
-import { AppDataSource } from '../database.js';
-import { CommandLog } from '../entities/index.js';
+import { AppDataSource, CommandLog } from '../database.js';
+import type { CommandLogEntity } from '../database.js';
 
 interface LogCommandParams {
   user_id: number;
@@ -18,7 +18,7 @@ interface LogCommandParams {
 class CommandLogService {
   public repository = AppDataSource.getRepository(CommandLog);
 
-  async log(params: LogCommandParams): Promise<CommandLog> {
+  async log(params: LogCommandParams): Promise<CommandLogEntity> {
     const log = this.repository.create({
       user_id: params.user_id,
       group_id: params.group_id ?? null,
@@ -36,7 +36,7 @@ class CommandLogService {
     return await this.repository.save(log);
   }
 
-  async addReason(logId: number, reason: string): Promise<CommandLog | null> {
+  async addReason(logId: number, reason: string): Promise<CommandLogEntity | null> {
     const log = await this.repository.findOne({ where: { id: logId } });
     if (!log) return null;
 
@@ -44,7 +44,7 @@ class CommandLogService {
     return await this.repository.save(log);
   }
 
-  async getLogsWithReason(groupId?: number, limit = 50): Promise<CommandLog[]> {
+  async getLogsWithReason(groupId?: number, limit = 50): Promise<CommandLogEntity[]> {
     const where: Record<string, any> = { reason: () => 'log.reason IS NOT NULL' };
     if (groupId !== undefined) {
       where.group_id = groupId;
@@ -57,7 +57,7 @@ class CommandLogService {
     });
   }
 
-  async getByUserId(userId: number, limit = 50): Promise<CommandLog[]> {
+  async getByUserId(userId: number, limit = 50): Promise<CommandLogEntity[]> {
     return await this.repository.find({
       where: { user_id: userId },
       order: { created_at: 'DESC' },
@@ -65,7 +65,7 @@ class CommandLogService {
     });
   }
 
-  async getByGroupId(groupId: number, limit = 50): Promise<CommandLog[]> {
+  async getByGroupId(groupId: number, limit = 50): Promise<CommandLogEntity[]> {
     return await this.repository.find({
       where: { group_id: groupId },
       order: { created_at: 'DESC' },
@@ -73,7 +73,7 @@ class CommandLogService {
     });
   }
 
-  async getByCommand(command: string, limit = 50): Promise<CommandLog[]> {
+  async getByCommand(command: string, limit = 50): Promise<CommandLogEntity[]> {
     return await this.repository.find({
       where: { command },
       order: { created_at: 'DESC' },
@@ -81,7 +81,7 @@ class CommandLogService {
     });
   }
 
-  async getCoAdminLogs(groupId?: number, limit = 50): Promise<CommandLog[]> {
+  async getCoAdminLogs(groupId?: number, limit = 50): Promise<CommandLogEntity[]> {
     const where: Record<string, any> = { is_co_admin: true };
     if (groupId !== undefined) {
       where.group_id = groupId;
@@ -94,7 +94,7 @@ class CommandLogService {
     });
   }
 
-  async getFailedLogs(limit = 50): Promise<CommandLog[]> {
+  async getFailedLogs(limit = 50): Promise<CommandLogEntity[]> {
     return await this.repository.find({
       where: { success: false },
       order: { created_at: 'DESC' },

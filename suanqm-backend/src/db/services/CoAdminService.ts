@@ -1,50 +1,50 @@
-import { AppDataSource } from '../database.js';
-import { CoAdmin } from '../entities/CoAdmin.js';
+import { AppDataSource, CoAdmin } from '../database.js';
+import type { CoAdminEntity } from '../database.js';
 import { logger } from '../../logger.js';
 
 class CoAdminService {
   private coAdminRepo = AppDataSource.getRepository(CoAdmin);
 
-  async getByUserId(userId: number, groupId: number): Promise<CoAdmin | null> {
+  async getByUserId(userId: number, groupId: number): Promise<CoAdminEntity | null> {
     return await this.coAdminRepo.findOne({
       where: { user_id: userId, group_id: groupId }
     });
   }
 
-  async getById(id: number): Promise<CoAdmin | null> {
+  async getById(id: number): Promise<CoAdminEntity | null> {
     return await this.coAdminRepo.findOne({
       where: { id }
     });
   }
 
-  async getAll(): Promise<CoAdmin[]> {
+  async getAll(): Promise<CoAdminEntity[]> {
     return await this.coAdminRepo.find({
       order: { created_at: 'DESC' }
     });
   }
 
-  async getAllByGroup(groupId: number): Promise<CoAdmin[]> {
+  async getAllByGroup(groupId: number): Promise<CoAdminEntity[]> {
     return await this.coAdminRepo.find({
       where: { group_id: groupId },
       order: { created_at: 'DESC' }
     });
   }
 
-  async getAllActive(): Promise<CoAdmin[]> {
+  async getAllActive(): Promise<CoAdminEntity[]> {
     return await this.coAdminRepo.find({
       where: { status: true },
       order: { created_at: 'DESC' }
     });
   }
 
-  async getAllActiveByGroup(groupId: number): Promise<CoAdmin[]> {
+  async getAllActiveByGroup(groupId: number): Promise<CoAdminEntity[]> {
     return await this.coAdminRepo.find({
       where: { group_id: groupId, status: true },
       order: { created_at: 'DESC' }
     });
   }
 
-  async create(userId: number, groupId: number, options: { status?: boolean; max_ruling?: number; ruling?: number } = {}): Promise<CoAdmin> {
+  async create(userId: number, groupId: number, options: { status?: boolean; max_ruling?: number; ruling?: number } = {}): Promise<CoAdminEntity> {
     const coAdmin = this.coAdminRepo.create({
       user_id: userId,
       group_id: groupId,
@@ -57,7 +57,7 @@ class CoAdminService {
     return coAdmin;
   }
 
-  async update(userId: number, groupId: number, updates: Partial<Pick<CoAdmin, 'status' | 'max_ruling' | 'ruling'>>): Promise<boolean> {
+  async update(userId: number, groupId: number, updates: Partial<Pick<CoAdminEntity, 'status' | 'max_ruling' | 'ruling'>>): Promise<boolean> {
     const result = await this.coAdminRepo.update(
       { user_id: userId, group_id: groupId },
       updates
@@ -68,7 +68,7 @@ class CoAdminService {
     return (result.affected || 0) > 0;
   }
 
-  async updateById(id: number, updates: Partial<Pick<CoAdmin, 'user_id' | 'group_id' | 'status' | 'max_ruling' | 'ruling'>>): Promise<boolean> {
+  async updateById(id: number, updates: Partial<Pick<CoAdminEntity, 'user_id' | 'group_id' | 'status' | 'max_ruling' | 'ruling'>>): Promise<boolean> {
     const result = await this.coAdminRepo.update(
       { id },
       updates

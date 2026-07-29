@@ -3,7 +3,7 @@ import { callAIWithRetry, clean_message_for_ai } from './ai_service.js';
 import { profileManager } from './profile.js';
 import napcat from '../napcat/index.js'
 import { Simplified_Messages } from "../server/utils/suanq_types.js";
-import { ViolationType } from '../db/entities/Violation.js';
+import { ViolationType } from '../db/database.js';
 import { logger } from '../logger.js';
 
 

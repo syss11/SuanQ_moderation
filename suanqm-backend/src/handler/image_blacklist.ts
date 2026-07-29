@@ -1,33 +1,26 @@
 import { Simplified_Messages } from "../server/utils/suanq_types.js";
-import { Image } from "../db/entities/Image.js";
-import { AppDataSource } from "../db/database.js";
+import { ImageService } from "../db/services/ImageService.js";
 import napcat from "../napcat/index.js";
 import VioPunish from "./vio_punish.js";
 import actionManager from "./actions.js";
 import { getConfig } from "../config/index.js";
 import { save_images_from_message, calculateHammingDistance } from "../napcat/utils.js";
-import { PenaltyType, ViolationType } from "../db/entities/Violation.js";
+import { PenaltyType, ViolationType } from "../db/database.js";
 import { send_message_to_chat } from "../character/behavior.js";
-
-
 import { logger } from "../logger.js";
 
 class ImageBlacklist {
+  private imageService = new ImageService();
+
   async isBanned(phash: bigint, threshold: number): Promise<boolean> {
     try {
-      const imageRepo = AppDataSource.getRepository(Image);
-      const bannedImages = await imageRepo.find({ 
-        where: { banned: true },
-        select: ['phash']
-      });
+      const bannedPhashes = await this.imageService.getBannedPhashes();
       
-      for (const img of bannedImages) {
-        if (img.phash !== null && img.phash !== undefined) {
-          const distance = calculateHammingDistance(phash, BigInt(img.phash));
-          
-          if (distance <= threshold) {
-            return true;
-          }
+      for (const bannedPhash of bannedPhashes) {
+        const distance = calculateHammingDistance(phash, BigInt(bannedPhash));
+        
+        if (distance <= threshold) {
+          return true;
         }
       }
       return false;
@@ -38,44 +31,11 @@ class ImageBlacklist {
   }
 
   async addBlacklist(phash: bigint, reason: string): Promise<boolean> {
-    try {
-      const imageRepo = AppDataSource.getRepository(Image);
-      const image = await imageRepo.findOne({ where: { phash: phash.toString() } });
-      
-      if (!image) {
-        logger.log('[ImageBlacklist] 未找到图片:', phash);
-        return false;
-      }
-
-      image.banned = true;
-      image.ban_reason = reason;
-      await imageRepo.save(image);
-      
-      return true;
-    } catch (error) {
-      logger.error('[ImageBlacklist] 添加黑名单失败:', error);
-      return false;
-    }
+    return await this.imageService.banImageByPhash(phash.toString(), reason);
   }
 
   async removeBlacklist(phash: bigint): Promise<boolean> {
-    try {
-      const imageRepo = AppDataSource.getRepository(Image);
-      const image = await imageRepo.findOne({ where: { phash: phash.toString() } });
-      
-      if (!image) {
-        return false;
-      }
-
-      image.banned = false;
-      image.ban_reason = '';
-      await imageRepo.save(image);
-      
-      return true;
-    } catch (error) {
-      logger.error('[ImageBlacklist] 移除黑名单失败:', error);
-      return false;
-    }
+    return await this.imageService.unbanImageByPhash(phash.toString());
   }
 }
 

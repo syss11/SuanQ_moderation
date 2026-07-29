@@ -10,8 +10,7 @@ import { self_id } from "../napcat/main.js";
 import { getConfig, setConfigByPath } from "../config/index.js";
 import { generateDocumentation } from "../config/index.js";
 import { addImageBlacklist, removeImageBlacklist } from "./image_blacklist.js";
-import { AppDataSource } from "../db/database.js";
-import { Image } from "../db/entities/Image.js";
+import { ImageService } from "../db/services/ImageService.js";
 import { logger } from "../logger.js";
 import { ai_moderate, message_to_aitext } from "../character/ai_moderate.js";
 import { sensitiveFilter } from "../services/filter.js";
@@ -833,8 +832,8 @@ const commands: SuanqCommand[] = [
             }
             logger.log('[Commands] 禁用图片:', params.md5, '消息ID:', params.messageId);
             
-            const imageRepo = AppDataSource.getRepository(Image);
-            const image = await imageRepo.findOne({ where: { md5: params.md5 as string } });
+            const imageService = new ImageService();
+            const image = await imageService.findByMd5(params.md5 as string);
             
             if (!image || image.phash === null || image.phash === undefined) {
                 await quick_reply(message, `图片不存在或pHash未计算`, true);
@@ -873,8 +872,8 @@ const commands: SuanqCommand[] = [
                 return;
             }
             
-            const imageRepo = AppDataSource.getRepository(Image);
-            const image = await imageRepo.findOne({ where: { md5: params.md5 as string } });
+            const imageService = new ImageService();
+            const image = await imageService.findByMd5(params.md5 as string);
             
             if (!image || image.phash === null || image.phash === undefined) {
                 await quick_reply(message, `图片不存在或pHash未计算`, true);
@@ -1025,10 +1024,8 @@ export function match_command(message:Simplified_Messages):boolean{
 
 async function getReplyImageMD5(replyId: string): Promise<string | null> {
     try {
-        const imageRepo = AppDataSource.getRepository(Image);
-        const image = await imageRepo.findOne({
-            where: { message_id: Number(replyId) }
-        });
+        const imageService = new ImageService();
+        const image = await imageService.findByMessageId(Number(replyId));
         return image ? image.md5 : null;
     } catch (error) {
         logger.error('[Commands] 获取回复图片失败:', error);

@@ -18,7 +18,7 @@ import { forwardRecallMessage } from "../services/recallhelper.js";
 export const main_handlers = [
   new SqHandler('message.group', async (context: AllHandlers['message.group']) => {
     if (!checkWhitelistBlacklist('group', context.group_id, context.user_id)) {
-      logger.log('[Handler] 消息被黑白名单拦截');
+      
       return;
     }
 
@@ -34,7 +34,7 @@ export const main_handlers = [
   
   new SqHandler('message.private.friend', async (context: AllHandlers['message.private.friend']) => {
     if (!checkWhitelistBlacklist('private', undefined, context.user_id)) {
-      logger.log('[Handler] 消息被黑白名单拦截');
+      
       return;
     }
     
@@ -50,7 +50,7 @@ export const main_handlers = [
 
   new SqHandler('notice.group_recall', (context: AllHandlers['notice.group_recall']) => {
     if (!checkWhitelistBlacklist('group', context.group_id, undefined)) {
-      logger.log('[Handler] 消息被黑白名单拦截');
+      
       return;
     }
     
@@ -74,7 +74,7 @@ export const main_handlers = [
 
   new SqHandler('notice.friend_recall', (context: AllHandlers['notice.friend_recall']) => {
     if (!checkWhitelistBlacklist('private', undefined, context.user_id)) {
-      logger.log('[Handler] 消息被黑白名单拦截');
+      
       return;
     }
     
@@ -92,7 +92,7 @@ export const main_handlers = [
   }),
   new SqHandler('notice.group_increase',async (context: AllHandlers['notice.group_increase']) => {
     if (!checkWhitelistBlacklist('group', context.group_id, undefined)) {
-      logger.log('[Handler] 消息被黑白名单拦截');
+      
       return;
     }
     
@@ -164,7 +164,7 @@ export const main_handlers = [
   }),
   new SqHandler('notice.group_decrease',async (context: AllHandlers['notice.group_decrease']) => {
     if (!checkWhitelistBlacklist('group', context.group_id, undefined)) {
-      logger.log('[Handler] 消息被黑白名单拦截');
+      
       return;
     }
     
@@ -179,7 +179,7 @@ export const main_handlers = [
   }),
   new SqHandler('notice.group_msg_emoji_like',async (context: AllHandlers['notice.group_msg_emoji_like']) => {
     if (!checkWhitelistBlacklist('group', context.group_id, undefined)) {
-      logger.log('[Handler] 消息被黑白名单拦截');
+      
       return;
     }
     

@@ -1,11 +1,11 @@
 import { Repository } from 'typeorm';
-import { AppDataSource } from '../database.js';
-import { HumanVerification } from '../entities/HumanVerification.js';
+import { AppDataSource, HumanVerification } from '../database.js';
+import type { HumanVerificationEntity } from '../database.js';
 import { getConfig } from '../../config/index.js';
 import { logger } from '../../logger.js';
 
 export class HumanVerificationService {
-  private verificationRepo: Repository<HumanVerification>;
+  private verificationRepo: Repository<HumanVerificationEntity>;
 
   constructor() {
     this.verificationRepo = AppDataSource.getRepository(HumanVerification);
@@ -19,7 +19,7 @@ export class HumanVerificationService {
     group_id: number;
     key: string;
     expected_answer: string;
-  }): Promise<HumanVerification> {
+  }): Promise<HumanVerificationEntity> {
     try {
       const verification = this.verificationRepo.create({
         user_id: data.user_id,
@@ -39,7 +39,7 @@ export class HumanVerificationService {
   /**
    * 获取用户的待验证记录
    */
-  async getPendingVerification(userId: number, group_id: number): Promise<HumanVerification | null> {
+  async getPendingVerification(userId: number, group_id: number): Promise<HumanVerificationEntity | null> {
     try {
       return await this.verificationRepo.findOne({
         where: {

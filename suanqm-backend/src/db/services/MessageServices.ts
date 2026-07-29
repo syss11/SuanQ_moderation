@@ -1,28 +1,23 @@
 import { Repository } from 'typeorm';
-import { AppDataSource } from '../database.js';
-import { 
-  GroupChat, 
-  PrivateMessage as PrivateMessageEntity, 
-  GroupMessage as GroupMessageEntity, 
-  GroupMember ,Image
-} from '../entities/index.js';
+import { AppDataSource, GroupChat, PrivateMessage, GroupMessage, GroupMember, Image } from '../database.js';
+import type { GroupChatEntity, PrivateMessageEntity, GroupMessageEntity, GroupMemberEntity, ImageEntity } from '../database.js';
 import type { AllHandlers, GroupMessage as NapcatGroupMessage, PrivateFriendMessage as NapcatPrivateMessage } from "node-napcat-ts";
 import { userService } from './UserService.js';
 import { logger } from '../../logger.js';
 import { getConfig } from '../../config/index.js';
 
 export class MessageService {
-  private groupRepo: Repository<GroupChat>;
-  private groupMemberRepo: Repository<GroupMember>;
+  private groupRepo: Repository<GroupChatEntity>;
+  private groupMemberRepo: Repository<GroupMemberEntity>;
   private privateMsgRepo: Repository<PrivateMessageEntity>;
   private groupMsgRepo: Repository<GroupMessageEntity>;
-  private imageRepo: Repository<Image>;
+  private imageRepo: Repository<ImageEntity>;
 
   constructor() {
     this.groupRepo = AppDataSource.getRepository(GroupChat);
     this.groupMemberRepo = AppDataSource.getRepository(GroupMember);
-    this.privateMsgRepo = AppDataSource.getRepository(PrivateMessageEntity);
-    this.groupMsgRepo = AppDataSource.getRepository(GroupMessageEntity);
+    this.privateMsgRepo = AppDataSource.getRepository(PrivateMessage);
+    this.groupMsgRepo = AppDataSource.getRepository(GroupMessage);
     this.imageRepo = AppDataSource.getRepository(Image);
   }
 
@@ -267,6 +262,12 @@ export class MessageService {
       logger.error('获取群成员数量失败:', error);
       return 0;
     }
+  }
+
+  async getAllGroups(): Promise<GroupChatEntity[]> {
+    return this.groupRepo.find({
+      select: ['group_id', 'name', 'member_count']
+    });
   }
 
   /**

@@ -31,6 +31,21 @@ export const {
   CommandLog,
 } = entityModule;
 
+export type UserEntity = typeof User;
+export type GroupMessageEntity = typeof GroupMessage;
+export type GroupChatEntity = typeof GroupChat;
+export type GroupMemberEntity = typeof GroupMember;
+export type PrivateMessageEntity = typeof PrivateMessage;
+export type ImageEntity = typeof Image;
+export type ViolationEntity = typeof Violation;
+export type HumanVerificationEntity = typeof HumanVerification;
+export type UserInteractionEntity = typeof UserInteraction;
+export type CoAdminEntity = typeof CoAdmin;
+export type CommandLogEntity = typeof CommandLog;
+
+// Export enums from Violation entity
+export { ViolationType, PenaltyType, ViolationStatus } from './entities/sqljs/Violation.js';
+
 const commonConfig = {
   entities: [
     User,

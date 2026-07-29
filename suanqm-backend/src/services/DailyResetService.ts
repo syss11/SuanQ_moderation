@@ -1,6 +1,5 @@
 import cron, { ScheduledTask } from 'node-cron';
-import { AppDataSource } from '../db/database.js';
-import { UserInteraction } from '../db/entities/UserInteraction.js';
+import userInteractionService from '../db/services/UserInteractionService.js';
 import { logger } from '../logger.js';
 import ImageCleanupService from './ImageCleanupService.js';
 import { getConfig } from '../config/index.js';
@@ -10,21 +9,7 @@ class DailyResetService {
 
   async resetAllCheckins(): Promise<void> {
     try {
-      if (!AppDataSource.isInitialized) {
-        logger.warn('数据库未初始化，跳过签到次数重置');
-        return;
-      }
-
-      const interactionRepo = AppDataSource.getRepository(UserInteraction);
-
-      const result = await interactionRepo
-        .createQueryBuilder()
-        .update(UserInteraction)
-        .set({ remaining_checkins: 1 })
-        .where('remaining_checkins < 1')
-        .execute();
-
-      const affected = result.affected || 0;
+      const affected = await userInteractionService.resetAllCheckinsGlobal(1);
       logger.log(`✅ 每日签到次数重置完成: ${affected} 个用户已重置为 1 次`);
     } catch (error) {
       logger.error('❌ 每日签到次数重置失败:', error);
@@ -33,21 +18,7 @@ class DailyResetService {
 
   async resetAllInteractions(): Promise<void> {
     try {
-      if (!AppDataSource.isInitialized) {
-        logger.warn('数据库未初始化，跳过交互次数重置');
-        return;
-      }
-
-      const interactionRepo = AppDataSource.getRepository(UserInteraction);
-
-      const result = await interactionRepo
-        .createQueryBuilder()
-        .update(UserInteraction)
-        .set({ remaining_interactions: 3 })
-        .where('remaining_interactions < 3')
-        .execute();
-
-      const affected = result.affected || 0;
+      const affected = await userInteractionService.resetAllInteractionsGlobal(3);
       logger.log(`✅ 每日交互次数重置完成: ${affected} 个用户已重置为 3 次`);
     } catch (error) {
       logger.error('❌ 每日交互次数重置失败:', error);

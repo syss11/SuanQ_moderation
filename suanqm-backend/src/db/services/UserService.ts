@@ -1,13 +1,12 @@
 import { Repository } from 'typeorm';
-import { AppDataSource } from '../database.js';
-import { User } from '../entities/User.js';
-import { GroupMember } from '../entities/GroupMember.js';
+import { AppDataSource, User, GroupMember } from '../database.js';
+import type { UserEntity, GroupMemberEntity } from '../database.js';
 import { getConfig } from '../../config/index.js';
 import { logger } from '../../logger.js';
 
 export class UserService {
-  private userRepo: Repository<User>;
-  private groupMemberRepo: Repository<GroupMember>;
+  private userRepo: Repository<UserEntity>;
+  private groupMemberRepo: Repository<GroupMemberEntity>;
 
   constructor() {
     this.userRepo = AppDataSource.getRepository(User);
@@ -37,7 +36,7 @@ export class UserService {
   /**
    * 根据QQ号查询用户
    */
-  async getUserByQQId(qq_id: number): Promise<User | null> {
+  async getUserByQQId(qq_id: number): Promise<UserEntity | null> {
     try {
       return await this.userRepo.findOne({ where: { qq_id } });
     } catch (error) {
@@ -49,7 +48,7 @@ export class UserService {
   /**
    * 根据ID查询用户
    */
-  async getUserById(id: number): Promise<User | null> {
+  async getUserById(id: number): Promise<UserEntity | null> {
     try {
       return await this.userRepo.findOne({ where: { id } });
     } catch (error) {
@@ -166,7 +165,7 @@ export class UserService {
   async getAllUsers(options: {
     limit?: number;
     offset?: number;
-  } = {}): Promise<{ users: User[]; total: number }> {
+  } = {}): Promise<{ users: UserEntity[]; total: number }> {
     try {
       const { limit = 50, offset = 0 } = options;
       
@@ -218,7 +217,7 @@ export class UserService {
   /**
    * 根据信誉分范围查询用户
    */
-  async getUsersByCreditRange(minCredit: number, maxCredit: number): Promise<User[]> {
+  async getUsersByCreditRange(minCredit: number, maxCredit: number): Promise<UserEntity[]> {
     try {
       return await this.userRepo
         .createQueryBuilder('user')
