@@ -1,8 +1,5 @@
 version: '3.8'
 
-networks:
-  botsnet:
-    external: true
 
 services:
   suanqm-backend:
@@ -24,5 +21,4 @@ services:
       - ./suanqm-backend/data/images:/app/public/images
       - ./suanqm-backend/.env:/app/.env
     restart: unless-stopped
-    networks:
-      - botsnet
+    network_mode: host
