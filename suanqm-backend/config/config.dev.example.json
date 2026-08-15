@@ -234,6 +234,18 @@
     "admins_group": "管理员群ID",
     "recall_preventer":{
       "enabled": false
+    },
+    "suppression": {
+      "default_max_energy": 40,
+      "default_energy": 40,
+      "default_regen_per_second": 0,
+      "default_period_sec": 86400,
+      "regen_base": 0.0833,
+      "normal_message_cost": 8,
+      "long_message_cost": 18,
+      "long_message_threshold": 500,
+      "mute_seconds_per_negative_energy": 10,
+      "reset_energy_on_supp": true
     }
   },
 

@@ -16,6 +16,7 @@ export type VioPunishParams = {
     severity?: number;
     credit_deduction?: number;
     callback?: (enable_ai?: boolean,extra_prompt?: string) => Promise<void> | void;
+    skip_adapt_to_credit?: boolean;
 }
 
 export default class VioPunish{
@@ -28,6 +29,7 @@ export default class VioPunish{
     public severity?: number;
     public credit_deduction?: number;
     public callback?: (enable_ai?: boolean,extra_prompt?: string) => Promise<void> | void;
+    public skip_adapt_to_credit: boolean;
 
     constructor(params: VioPunishParams) {
         this.create_time = Math.floor(Date.now() / 1000);
@@ -39,6 +41,7 @@ export default class VioPunish{
         this.severity = params.severity;
         this.credit_deduction = params.credit_deduction;
         this.callback = params.callback;
+        this.skip_adapt_to_credit = params.skip_adapt_to_credit ?? false;
     }
 
     async execute(history_actions: VioPunish[],already_mute: {s: number}){
@@ -67,9 +70,11 @@ export default class VioPunish{
             enable_ai=false;
         }
 
-        const userCredit = await userService.getUserGroupCredit(this.group_id || 0, this.userid);
-        if (userCredit !== null) {
-            this.adapt_to_credit(userCredit);
+        if (!this.skip_adapt_to_credit) {
+            const userCredit = await userService.getUserGroupCredit(this.group_id || 0, this.userid);
+            if (userCredit !== null) {
+                this.adapt_to_credit(userCredit);
+            }
         }
 
         const creditChange = -(this.credit_deduction || 0);

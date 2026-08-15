@@ -464,6 +464,43 @@ function validateHelperConfig(helper: any, errors: string[], warnings: string[])
   if (typeof helper.recall_preventer.enabled !== 'boolean') {
     errors.push('helper.recall_preventer.enabled 必须是布尔值');
   }
+
+  if (helper.suppression) {
+    validateSuppressionConfig(helper.suppression, errors, warnings);
+  }
+}
+
+function validateSuppressionConfig(suppression: any, errors: string[], warnings: string[]): void {
+  if (typeof suppression.default_max_energy !== 'number' || suppression.default_max_energy <= 0) {
+    errors.push('helper.suppression.default_max_energy 必须是大于0的数字');
+  }
+  if (typeof suppression.default_energy !== 'number') {
+    errors.push('helper.suppression.default_energy 必须是数字');
+  }
+  if (typeof suppression.default_regen_per_second !== 'number' || suppression.default_regen_per_second < 0) {
+    errors.push('helper.suppression.default_regen_per_second 必须是非负数');
+  }
+  if (typeof suppression.default_period_sec !== 'number') {
+    errors.push('helper.suppression.default_period_sec 必须是数字（秒）');
+  }
+  if (typeof suppression.regen_base !== 'number' || suppression.regen_base < 0) {
+    errors.push('helper.suppression.regen_base 必须是非负数');
+  }
+  if (typeof suppression.normal_message_cost !== 'number' || suppression.normal_message_cost < 0) {
+    errors.push('helper.suppression.normal_message_cost 必须是非负数');
+  }
+  if (typeof suppression.long_message_cost !== 'number' || suppression.long_message_cost < 0) {
+    errors.push('helper.suppression.long_message_cost 必须是非负数');
+  }
+  if (typeof suppression.long_message_threshold !== 'number' || suppression.long_message_threshold < 0) {
+    errors.push('helper.suppression.long_message_threshold 必须是非负数');
+  }
+  if (typeof suppression.mute_seconds_per_negative_energy !== 'number' || suppression.mute_seconds_per_negative_energy < 0) {
+    errors.push('helper.suppression.mute_seconds_per_negative_energy 必须是非负数');
+  }
+  if (typeof suppression.reset_energy_on_supp !== 'boolean') {
+    errors.push('helper.suppression.reset_energy_on_supp 必须是布尔值');
+  }
 }
 
 export function logValidationResult(result: ValidationResult): string {

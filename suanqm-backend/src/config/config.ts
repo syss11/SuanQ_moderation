@@ -187,6 +187,20 @@ export interface HelperConfig {
     recall_preventer: {
         enabled: boolean;
     };
+    suppression?: SuppressionConfig;
+}
+
+export interface SuppressionConfig {
+    default_max_energy: number;
+    default_energy: number;
+    default_regen_per_second: number;
+    default_period_sec: number;
+    regen_base: number;
+    normal_message_cost: number;
+    long_message_cost: number;
+    long_message_threshold: number;
+    mute_seconds_per_negative_energy: number;
+    reset_energy_on_supp: boolean;
 }
 
 export interface ImageCleanupConfig {

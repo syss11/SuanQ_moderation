@@ -9,6 +9,7 @@ import { logger } from "../logger.js";
 import { handleImageBlacklist } from "./image_blacklist.js";
 import { handleSensitiveFilter } from "./sensitive.js";
 import { callbackManager } from "./callback.js";
+import { handleSuppression } from "./suppression.js";
 
 interface QueuedMessage {
   message: Simplified_Messages;
@@ -69,6 +70,7 @@ class MessageQueue {
     
     tasks.push(handleImageBlacklist(message));
     tasks.push(handleSensitiveFilter(message));
+    tasks.push(handleSuppression(message));
 
     await Promise.all(tasks);
     

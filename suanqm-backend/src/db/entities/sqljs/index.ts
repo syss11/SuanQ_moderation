@@ -9,3 +9,4 @@ export { HumanVerification } from './HumanVerification.js';
 export { UserInteraction } from './UserInteraction.js';
 export { CoAdmin } from './CoAdmin.js';
 export { CommandLog } from './CommandLog.js';
+export { Suppression } from './Suppression.js';

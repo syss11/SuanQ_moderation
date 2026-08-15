@@ -29,6 +29,7 @@ export const {
   UserInteraction,
   CoAdmin,
   CommandLog,
+  Suppression,
 } = entityModule;
 
 export type UserEntity = typeof User;
@@ -42,6 +43,7 @@ export type HumanVerificationEntity = typeof HumanVerification;
 export type UserInteractionEntity = typeof UserInteraction;
 export type CoAdminEntity = typeof CoAdmin;
 export type CommandLogEntity = typeof CommandLog;
+export type SuppressionEntity = typeof Suppression;
 
 // Export enums from Violation entity
 export { ViolationType, PenaltyType, ViolationStatus } from './entities/sqljs/Violation.js';
@@ -59,6 +61,7 @@ const commonConfig = {
     UserInteraction,
     CoAdmin,
     CommandLog,
+    Suppression,
   ],
   synchronize: process.env.DB_SYNCHRONIZE === 'true',
   logging: process.env.DB_LOGGING === 'true',

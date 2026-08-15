@@ -1,7 +1,17 @@
 import { Simplified_Messages } from "../server/utils/suanq_types";
 import coAdminService from "../db/services/CoAdminService.js";
 import { userService } from "../db/services/UserService.js";
+import { suppressionService } from "../db/services/SuppressionService.js";
 import { quick_reply } from "./utils.js";
+import { getConfig } from "../config/index.js";
+
+function getSuppressionRegenBase(): number {
+  return getConfig()?.helper?.suppression?.regen_base ?? 0.0833;
+}
+
+function getResetEnergyOnSupp(): boolean {
+  return getConfig()?.helper?.suppression?.reset_energy_on_supp ?? true;
+}
 
 const commands: any[] = [];
 
@@ -199,5 +209,110 @@ createCommand({
         await quick_reply(message, `操作成功(-${amount})，当前信誉分: ${newCredit}`);
     }
 });
+
+createCommand({
+    command: 'supp',
+    description: '压制成员（发言消耗精力，精力不足禁言）。持续时间：负数=不限时长，0=取消。',
+    params: [
+        { name: 'userId', type: 'number' },
+        { name: 'duration', type: 'number' },
+        { name: 'regenMultiplier', type: 'number', default: 1 }
+    ],
+    cd: 2,
+    auth: 'admin',
+    supportCoAdmin: true,
+    callback: async (params, message) => {
+        if (message.message_type !== 'group') {
+            await quick_reply(message, '此命令仅限群聊使用', true);
+            return;
+        }
+
+        const userId = params.userId as number;
+        const duration = params.duration as number;
+        const regenMultiplier = (params.regenMultiplier as number) ?? 1;
+
+        if (!Number.isFinite(userId)) {
+            await quick_reply(message, '成员ID无效', true);
+            return;
+        }
+
+        // 0 = 取消压制
+        if (duration === 0) {
+            const ok = await suppressionService.setStatus(userId, message.group_id, false);
+            if (ok) {
+                await quick_reply(message, `已取消压制: ${userId}`);
+            } else {
+                await quick_reply(message, `取消失败，该用户未被压制`, true);
+            }
+            return;
+        }
+
+        if (!Number.isFinite(duration)) {
+            await quick_reply(message, '持续时间无效', true);
+            return;
+        }
+
+        if (!Number.isFinite(regenMultiplier) || regenMultiplier < 0) {
+            await quick_reply(message, '精力回复倍率必须为非负数', true);
+            return;
+        }
+
+        const regen = getSuppressionRegenBase() * regenMultiplier;
+
+        try {
+            const saved = await suppressionService.upsert(userId, message.group_id, {
+                status: true,
+                periodSec: duration,   // 负数=不限时长，正数=秒数
+                regen_per_second: regen,
+            });
+
+            // 根据配置决定是否重置精力为上限
+            if (getResetEnergyOnSupp()) {
+                const resetVal = await suppressionService.resetEnergy(userId, message.group_id);
+                if (resetVal !== null) saved.energy = resetVal;
+            }
+
+            const durationText = saved.period < 0
+                ? '不限时长'
+                : `${saved.period}秒`;
+            const remainingText = saved.period < 0
+                ? '永久'
+                : `${suppressionService.getRemainingSec(saved)}秒`;
+
+            await quick_reply(
+                message,
+                `执行压制成功\n` +
+                `时长: ${durationText} ` +
+                `精力: ${Math.floor(saved.energy)}/${Math.floor(saved.max_energy)}\n` +
+                `回复速率: ${(saved.regen_per_second * 60).toFixed(1)}/min\n`+
+                '发言将消耗精力，精力不足将会被禁言！'
+            );
+        } catch (error: any) {
+            await quick_reply(message, `压制失败: ${error?.message || error}`, true);
+        }
+    }
+});
+
+
+createCommand({
+    command: 'energy',
+    description: '查询我的精力值（仅被压制时）',
+    params: [],
+    cd: 5,
+    callback: async (params, message) => {
+        if (message.message_type !== 'group') {
+            await quick_reply(message, '此命令仅限群聊使用', true);
+            return;
+        }
+
+        const energy = await suppressionService.getEnergy(message.user_id, message.group_id);
+        if (energy === null) {
+            await quick_reply(message, '当前未处于压制状态，无精力值');
+            return;
+        }
+        await quick_reply(message, `当前精力: ${Math.floor(energy)}`);
+    }
+});
+
 
 export default commands;
